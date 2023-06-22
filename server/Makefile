@@ -16,4 +16,9 @@ migrateup:
 migratedown:
 	migrate -path db/migrations -database "postgresql://root:password@localhost:5432/go-chat?sslmode=disable" -verbose down
 
-.PHONY: postgresinit postgres createdb dropdb migrateup migratedown
+build:
+	go mod tidy
+	go build -o ./bin/server.exe ./cmd
+
+.PHONY: postgresinit postgres createdb dropdb migrateup migratedown build
+

@@ -16,6 +16,16 @@ type CreateRoomReq struct {
 	Name string `json:"name"`
 }
 
+type RoomRes struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type ClientRes struct {
+	ID       string `json:"id"`
+	Username string `json:"name"`
+}
+
 func NewHandler(h *Hub) *Handler {
 	return &Handler{
 		hub: h,
@@ -79,4 +89,38 @@ func (h *Handler) JoinRoom(c *gin.Context) {
 
 	go cl.writeMessage()
 	cl.readMessage(h.hub)
+}
+
+func (h *Handler) GetRooms(c *gin.Context) {
+	rooms := make([]RoomRes, 0)
+
+	for _, r := range h.hub.Rooms {
+		rooms = append(rooms, RoomRes{
+			ID:   r.ID,
+			Name: r.Name,
+		})
+	}
+
+	c.JSON(http.StatusOK, rooms)
+}
+
+func (h *Handler) GetClients(c *gin.Context) {
+	var clients []ClientRes
+
+	roomId := c.Param("roomId")
+
+	if _, ok := h.hub.Rooms[roomId]; !ok {
+		clients = make([]ClientRes, 0)
+		c.JSON(http.StatusOK, clients)
+		return
+	}
+
+	for _, client := range h.hub.Rooms[roomId].Clients {
+		clients = append(clients, ClientRes{
+			ID:       client.ID,
+			Username: client.Username,
+		})
+	}
+
+	c.JSON(http.StatusOK, clients)
 }

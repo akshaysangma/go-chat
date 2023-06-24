@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	// TODO: move this to secrets
 	secertKey = "veryverysecretkey"
 )
 
